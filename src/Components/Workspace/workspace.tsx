@@ -1,6 +1,7 @@
 import React from 'react';
 import Split from 'react-split';
 import ProblemDescription from './ProblemDescription/ProblemDescription';
+import Playground from './Playground/Playground';
 
 type workspaceProps = {
     
@@ -15,7 +16,7 @@ const workspace:React.FC<workspaceProps> = () => {
                     <ProblemDescription/>
                 </div>
                 <div>
-                    Code Editor 
+                    <Playground/>
                 </div> 
             </Split>
         </>

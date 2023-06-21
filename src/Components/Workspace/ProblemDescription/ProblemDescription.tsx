@@ -24,7 +24,7 @@ const ProblemDescription:React.FC<ProblemDescriptionProps> = () => {
 					{/* Problem heading */}
 					<div className='w-full'>
 						<div className='flex space-x-4'>
-							<div className='flex-1 mr-2 text-lg text-white font-medium'>1. two sum</div>
+							<div className='flex-1 mr-2 text-lg text-white font-medium'>1. Two sum</div>
 						</div>
 						{/* {!loading && currentProblem && ( */}
 							<div className='flex items-center mt-3'>
@@ -78,7 +78,7 @@ const ProblemDescription:React.FC<ProblemDescriptionProps> = () => {
 						)} */}
 
 						{/* Problem Statement(paragraphs) */}
-						<div className='text-white text-sm'>
+						<div className='text-white text-sm my-3'>
 							{/* <div dangerouslySetInnerHTML={{ __html: problem.problemStatement }} /> */}
                             <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Ipsum dignissimos commodi accusamus qui iste dolorum itaque neque illo sunt perspiciatis, ad maxime corporis magnam vel repellendus velit facilis dolores quisquam?</p>
 						</div>
