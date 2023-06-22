@@ -1,13 +1,14 @@
+import { Problem } from '@/utils/types/problem';
 import React from 'react';
 import { AiFillLike, AiOutlineLoading3Quarters, AiFillDislike, AiFillStar } from 'react-icons/ai';
 import { BsCheck2Circle } from 'react-icons/bs';
 import { TiStarOutline } from "react-icons/ti";
 
 type ProblemDescriptionProps = {
-    
+    problem: Problem
 };
 
-const ProblemDescription:React.FC<ProblemDescriptionProps> = () => {
+const ProblemDescription:React.FC<ProblemDescriptionProps> = ({problem}) => {
     
     return (
         <>
@@ -24,7 +25,7 @@ const ProblemDescription:React.FC<ProblemDescriptionProps> = () => {
 					{/* Problem heading */}
 					<div className='w-full'>
 						<div className='flex space-x-4'>
-							<div className='flex-1 mr-2 text-lg text-white font-medium'>1. Two sum</div>
+							<div className='flex-1 mr-2 text-lg text-white font-medium'>{problem?.title}</div>
 						</div>
 						{/* {!loading && currentProblem && ( */}
 							<div className='flex items-center mt-3'>
@@ -79,31 +80,37 @@ const ProblemDescription:React.FC<ProblemDescriptionProps> = () => {
 
 						{/* Problem Statement(paragraphs) */}
 						<div className='text-white text-sm my-3'>
-							{/* <div dangerouslySetInnerHTML={{ __html: problem.problemStatement }} /> */}
-                            <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Ipsum dignissimos commodi accusamus qui iste dolorum itaque neque illo sunt perspiciatis, ad maxime corporis magnam vel repellendus velit facilis dolores quisquam?</p>
+							{/* We use dangerouslySetInnerHTML because problem.problemStatement is already in HTML formal
+							and we have to render it directly here (including HTML) */}
+							<div dangerouslySetInnerHTML={{ __html: problem.problemStatement }} />
 						</div>
 
 						{/* Examples */}
 						<div className='mt-4'>
-							{/* {problem.examples.map((example, index) => ( */}
-								<div>
-									<p className='font-medium text-white '>Example 1 </p>
-									{/* {example.img && <img src={example.img} alt='' className='mt-3' />} */}
-									<div className='example-card'>
-										<pre>
-											<strong className='text-white'>Input: </strong> nums = [2,3,3,4], target = 9{" "}
-											<br />
-											<strong>Output:</strong>
-											[0,1] <br />
-											{/* {example.explanation && (
-												<>
-													<strong>Explanation:</strong> {example.explanation}
-												</>
-											)} */}
-										</pre>
+								{problem.examples.map((example,index) => (
+									<div key={example.id}>
+										<p className='font-medium text-white '>Example {index + 1}: </p>
+										{example.img && (
+											<img src={example.img} alt='image' className='mt-3'/>
+										)}
+										<div className='example-card'>
+											<pre>
+												<strong className='text-white'>Input: </strong> {example.inputText}
+												<br />
+												<strong>Output:</strong>
+												{example.outputText}<br />
+
+												{
+													example.explanation && (
+														<>
+															<strong>Explanation:</strong> {example.explanation}
+														</>
+													)
+												}
+											</pre>
+										</div>
 									</div>
-								</div>
-							{/* ))} */}
+								))}
 						</div>
 
 						{/* Constraints */}
@@ -113,21 +120,10 @@ const ProblemDescription:React.FC<ProblemDescriptionProps> = () => {
 								<div dangerouslySetInnerHTML={{ __html: problem.constraints }} />
 							</ul>
 						</div> */}
-                        <div className='my-5'>
+                        <div className='my-8 pb-4'>
                             <div className='text-white text-sm font-medium'>Constraints:</div>
                             <ul className='text-white ml-5 list-disc'>
-                                <li className='mt-2'>
-                                    <code> 2 nums.length 10</code>
-                                </li>
-                                <li className='mt-2'>
-                                    <code> 2 nums.length 10</code>
-                                </li>
-                                <li className='mt-2'>
-                                    <code> 2 nums.length 10</code>
-                                </li>
-                                <li className='mt-2'>
-                                    <strong>Only one valid answer exists.</strong>
-                                </li>
+                                <div dangerouslySetInnerHTML={{ __html: problem.constraints }} />
                             </ul>
                         </div>
 					</div>
