@@ -1,21 +1,25 @@
 import React, {useEffect, useState} from 'react';
-import { problems } from '@/mockProblems/problems';
 import { BsCheckCircle } from 'react-icons/bs';
 import Link from 'next/link';
 import { AiFillYoutube } from 'react-icons/ai';
 import { IoClose } from 'react-icons/io5';
 import YouTube from 'react-youtube';
+import { firestore } from '@/firebase/firebase';
+import { collection, doc, getDocs, orderBy, query } from 'firebase/firestore';
+import { DBProblem } from '@/utils/types/problem';
 
 type ProblemsTableProps = {
-    
+    setLoadingProblems : React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const ProblemsTable:React.FC<ProblemsTableProps> = () => {
+const ProblemsTable:React.FC<ProblemsTableProps> = ({setLoadingProblems}) => {
     
     const [youtubePlayer, setYoutubePlayer] = useState({
         isOpen: false,
         videoId: ""
     })
+
+    const problems = useGetProblems(setLoadingProblems);
 
     const closeModal = () => {
         setYoutubePlayer({ isOpen: false, videoId:"" });
@@ -35,30 +39,36 @@ const ProblemsTable:React.FC<ProblemsTableProps> = () => {
         <>
             <tbody className='text-white'>
 
-                {/* doc -> one row of table */}
-                {problems.map((doc,idx) => {
+                {/* problem -> one row of table */}
+                {problems.map((problem,idx) => {
 
-                    const difficultyColor = doc.difficulty === "Easy" ? 'text-dark-green-s' : doc.difficulty === "Medium" ? "text-dark-yellow" : "text-dark-pink";
+                    const difficultyColor = problem.difficulty === "Easy" ? 'text-dark-green-s' : problem.difficulty === "Medium" ? "text-dark-yellow" : "text-dark-pink";
 
                     return(
-                        <tr className={`${idx % 2 == 1 ? 'bg-dark-layer-1' : ''}`} key={doc.id}>
+                        <tr className={`${idx % 2 == 1 ? 'bg-dark-layer-1' : ''}`} key={problem.id}>
                             <th className='px-2 py-4 font-medium whitespace-nowrap text-dark-green-s'>
                                 <BsCheckCircle fontSize={'18'} width="18"/>
                             </th>
                             <td className='px-6 py-4'>
-                                <Link className='hover:text-blue-600 cursor-pointer' href={`/problems/${doc.id}`}>
-                                    {doc.title}
+                                {problem.link ? (
+                                    <Link className='hover:text-blue-600 cursor-pointer' href={problem.link} target='_blank'>
+                                    {problem.title}
                                 </Link>
+                                ) : (
+                                    <Link className='hover:text-blue-600 cursor-pointer' href={`/problems/${problem.id}`}>
+                                        {problem.title}
+                                    </Link>
+                                )}
                             </td>
                             <td className={`px-6 py-4 ${difficultyColor}`}>
-                                {doc.difficulty}
+                                {problem.difficulty}
                             </td>
                             <td className={'px-6 py-4'}>
-                                {doc.category}
+                                {problem.category}
                             </td>
                             <td className={'px-6 py-4'}>
-                                {doc.videoId ? (
-                                    <AiFillYoutube className='cursor-pointer hover:text-red-600' fontSize={"18"} onClick={() => setYoutubePlayer({ isOpen: true, videoId: doc.videoId as string })}/>
+                                {problem.videoId ? (
+                                    <AiFillYoutube className='cursor-pointer hover:text-red-600' fontSize={"18"} onClick={() => setYoutubePlayer({ isOpen: true, videoId: problem.videoId as string })}/>
                                 ) : (
                                     <p className='text-gray-400'>Coming Soon</p>
                                 )}
@@ -84,3 +94,29 @@ const ProblemsTable:React.FC<ProblemsTableProps> = () => {
     );
 }
 export default ProblemsTable;
+
+function useGetProblems(setLoadingProblems: React.Dispatch<React.SetStateAction<boolean>>) {
+    const [problems,setProblems] = useState<DBProblem[]>([]);
+
+    useEffect(() => {
+        const getProblems = async () => {
+            
+            // Fetching data from firebase.
+
+            setLoadingProblems(true);
+            const q = query(collection(firestore,"problems"), orderBy("order","asc"))
+            const querySnapshot = await getDocs(q);
+            const tmp: DBProblem[] = [];
+            querySnapshot.forEach((doc) => {
+                // // doc.data() is never undefined for query doc snapshots
+                // console.log(doc.id, " => ", doc.data());
+                tmp.push({id:doc.id,...doc.data()} as DBProblem)
+            });
+            setProblems(tmp); 
+            setLoadingProblems(false);
+        }
+
+        getProblems();
+    },[setLoadingProblems])
+    return problems;
+}

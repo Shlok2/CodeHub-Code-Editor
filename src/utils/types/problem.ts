@@ -19,6 +19,7 @@ export type Problem = {
 	starterFunctionName: string;
 };
 
+// Database (FireStore)
 export type DBProblem = {
 	id: string;
 	title: string;
