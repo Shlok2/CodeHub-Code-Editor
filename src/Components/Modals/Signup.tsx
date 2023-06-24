@@ -2,10 +2,11 @@ import React, { useEffect } from 'react';
 import {useState} from 'react'; 
 import { useSetRecoilState } from 'recoil';
 import { AuthModalState } from '@/atoms/authModalAtom'; 
-import { auth } from '@/firebase/firebase';
+import { auth, firestore } from '@/firebase/firebase';
 import { useCreateUserWithEmailAndPassword } from 'react-firebase-hooks/auth';
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
+import { doc, setDoc } from 'firebase/firestore';
 
 type SignupProps = {
     
@@ -21,20 +22,42 @@ const Signup:React.FC<SignupProps> = () => {
     const handleClick = () => {
         setAuthModalState((prev) => ({ ...prev,type: "login" }));
     }
+
     const handleChangeInput = (e:React.ChangeEvent<HTMLInputElement>) => {
         setInputs((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     }
+
     const handleRegister = async (e:React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if(!inputs.email || !inputs.password || !inputs.displayName) return toast.error("Please fill all fields", {position: "top-center", autoClose: 2000, theme:"dark"});;
         try {
 
+            toast.loading("Creating your account",{position:"top-right",toastId:"loadingToast"})
             const newUser = await createUserWithEmailAndPassword(inputs.email, inputs.password);
             if(!newUser) return;
+
+            // Pushing data into database
+
+            const userData = {
+                uid: newUser.user.uid,
+                email: newUser.user.email,
+                displayName: inputs.displayName,
+                createdAt: Date.now(),
+                UpdatedAt: Date.now(),
+                likedProblems:[],
+                dislikedProblems:[],
+                solvedProblems:[],
+                starredProblems:[],
+            }
+
+            await setDoc(doc(firestore,"users",newUser.user.uid), userData)
+
             router.push('/');
 
         } catch (error:any) {
-            toast.error(error.message, {position: "top-center", autoClose: 2000, theme:"dark"});
+            toast.error(error.message, {position: "top-right", autoClose: 2000, theme:"dark"});
+        } finally{
+            toast.dismiss("loadingToast")
         }
     }
 
