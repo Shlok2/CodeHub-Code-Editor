@@ -3,6 +3,7 @@ import Topbar from '@/Components/Topbar/Topbar';
 import { Inter } from 'next/font/google';
 // import {ProblemsTable} from '@/Components/ProblemsTable/ProblemsTable';
 import ProblemsTable from '@/Components/ProblemsTable/ProblemsTable';
+import useHasMounted from '@/hooks/useHasMounted';
 // import { firestore } from '@/firebase/firebase';
 // import { doc, setDoc } from 'firebase/firestore';
 
@@ -40,6 +41,9 @@ export default function Home() {
 	// }
 
 	const [loadingProblems, setLoadingProblems] = useState(true);
+	const hasMounted = useHasMounted();
+
+	if(!hasMounted) return null;
 
   return (
     <>
