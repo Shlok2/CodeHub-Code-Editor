@@ -3,6 +3,7 @@ import React from 'react';
 import Workspace from '@/Components/Workspace/workspace';
 import { problems } from '@/utils/problems';
 import { Problem } from '@/utils/types/problem';
+import useHasMounted from '@/hooks/useHasMounted';
 
 type ProblemPageProps = {
     problem:Problem
@@ -10,6 +11,10 @@ type ProblemPageProps = {
 
 const ProblemPage:React.FC<ProblemPageProps> = ({problem}) => {
     // console.log(problem);
+    const hasMounted = useHasMounted();
+
+	if(!hasMounted) return null;
+
     return <div>
         <Topbar problemPage/>
         <Workspace problem={problem}/>
